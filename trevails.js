@@ -48,7 +48,7 @@
 
 function knightMoves([x, y], [solveX, solveY]) {
   let board = 8;
-  let queue = [[x, y, 0]];
+  let queue = [[x, y, 0, `[${x}, ${y}]`]];
   if (x == solveX && y == solveY) {
     return 'You are already at this location';
   }
@@ -72,32 +72,42 @@ function knightMoves([x, y], [solveX, solveY]) {
     }
   }
 
+  let queueOpen = true;
+
   while (queue.length > 0) {
     let active = queue[0];
     queue.shift();
 
     moves.forEach((move) => {
-      let findMove = [active[0] + move[0], active[1] + move[1], active[2] + 1];
+      let findMove = [
+        active[0] + move[0],
+        active[1] + move[1],
+        active[2] + 1,
+        `${active[3]} --> [${active[0] + move[0]}, ${active[1] + move[1]}]`,
+      ];
 
       if (
         findMove[0] >= 0 &&
         findMove[0] < board &&
         findMove[1] >= 0 &&
-        findMove[1] < board &&
-        !visited[findMove[0]][findMove[1]]
+        findMove[1] < board
+        // !visited[findMove[0]][findMove[1]]
       ) {
-        visited[findMove[0]][findMove[1]] = true;
+        // visited[findMove[0]][findMove[1]] = true;
         if (findMove[0] == solveX && findMove[1] == solveY) {
-          console.log(`It took ${findMove[2]} moves to get there!`);
+          queueOpen = false;
+          console.log(
+            `It took ${findMove[2]} move(s) to get there, the path was ${findMove[3]}`
+          );
+          return;
+        } else if (queueOpen == true) {
+          queue.push(findMove);
+        } else {
           return;
         }
       }
-
-      queue.push(findMove);
     });
   }
-
-  return -1;
 }
 
 knightMoves([1, 2], [2, 0]);
